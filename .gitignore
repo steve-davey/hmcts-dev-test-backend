@@ -12,6 +12,17 @@ bin/main/application.yaml
 .settings
 .springBeans
 
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
+
 ### IntelliJ IDEA ###
 .idea
 /out
