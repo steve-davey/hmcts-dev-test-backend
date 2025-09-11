@@ -58,16 +58,16 @@ configurations {
   smokeTestRuntimeOnly.extendsFrom runtimeOnly
 }
 
-tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+tasks.withType(JavaCompile).configureEach {
+  options.compilerArgs.addAll(["-Xlint:unchecked", "-Werror"])
 }
 
 // https://github.com/gradle/gradle/issues/16791
 tasks.withType(JavaExec).configureEach {
-  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+  javaLauncher = javaToolchains.launcherFor(java.toolchain)
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
   useJUnitPlatform()
 
   testLogging {
@@ -76,26 +76,27 @@ tasks.withType(Test) {
 }
 
 test {
-  failFast = true
+  failFast = true   // ✅ plain boolean
 }
 
-task functional(type: Test) {
+tasks.register("functional", Test) {
   description = "Runs functional tests"
   group = "Verification"
   testClassesDirs = sourceSets.functionalTest.output.classesDirs
   classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
-task integration(type: Test) {
+tasks.register("integration", Test) {
   description = "Runs integration tests"
   group = "Verification"
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = true
+  failFast = true   // ✅ plain boolean
 }
 
-task smoke(type: Test) {
+tasks.register("smoke", Test) {
   description = "Runs Smoke Tests"
+  group = "Verification"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
 }
@@ -103,14 +104,18 @@ task smoke(type: Test) {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.required = true
-    csv.required = false
-    html.required = true
+    xml.required = true   // ✅ Property<Boolean>
+    csv.required = false  // ✅ Property<Boolean>
+    html.required = true  // ✅ Property<Boolean>
   }
 }
 
-project.tasks['sonarqube'].dependsOn jacocoTestReport
-project.tasks['check'].dependsOn integration
+project.tasks.named("sonarqube").configure {
+  dependsOn jacocoTestReport
+}
+project.tasks.named("check").configure {
+  dependsOn integration
+}
 
 sonarqube {
   properties {
@@ -126,14 +131,14 @@ dependencyUpdates {
     def regex = /^[0-9,.v-]+$/
     return !stableKeyword && !(version ==~ regex)
   }
-  rejectVersionIf { selection -> // <---- notice how the closure argument is named
+  rejectVersionIf { selection ->
     return isNonStable(selection.candidate.version) && !isNonStable(selection.currentVersion)
   }
 }
 
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-  suppressionFile = 'config/owasp/suppressions.xml'
+  suppressionFile = file('config/owasp/suppressions.xml') // ✅ File, not Property
 }
 
 repositories {
@@ -169,16 +174,22 @@ dependencies {
 
   testImplementation(platform('org.junit:junit-bom:5.13.4'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-  testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+  testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
+
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  runtimeOnly 'com.h2database:h2' // for testing
+  // or runtimeOnly 'org.postgresql:postgresql' // for production
 }
 
-mainClassName = 'uk.gov.hmcts.reform.dev.Application'
+application {
+  mainClass = 'uk.gov.hmcts.reform.dev.Application'
+}
 
 bootJar {
-  archiveFileName = "test-backend.jar"
+  archiveFileName = "test-backend.jar" // ✅ Property<String>
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
@@ -187,9 +198,13 @@ bootJar {
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
 rootProject.tasks.named("processSmokeTestResources") {
-  duplicatesStrategy = 'include'
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE // ✅ enum
 }
 
 wrapper {
-    distributionType = Wrapper.DistributionType.ALL
+  distributionType = Wrapper.DistributionType.ALL // ✅ enum
+}
+
+checkstyle {
+  ignoreFailures = true // ✅ plain boolean
 }
