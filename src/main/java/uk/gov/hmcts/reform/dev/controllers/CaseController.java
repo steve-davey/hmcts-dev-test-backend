@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.dev.models.PagedResponse;
 import uk.gov.hmcts.reform.dev.service.CaseService;
 import uk.gov.hmcts.reform.dev.models.Case;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -43,7 +45,10 @@ public class CaseController {
     }
 
     @PostMapping(value = "/cases")
-    public ResponseEntity<Case> createCase(@RequestBody Case myCase) { 
+    public ResponseEntity<Case> createCase(@RequestBody Case myCase) {
+    Instant instant = Instant.now();
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    myCase.setCreatedDate(localDateTime);
     Case createdCase = caseService.createCase(myCase);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdCase);
 	}
