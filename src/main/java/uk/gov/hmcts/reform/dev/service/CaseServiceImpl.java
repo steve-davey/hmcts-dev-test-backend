@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.dev.service;
 
 import uk.gov.hmcts.reform.dev.models.Case;
+import uk.gov.hmcts.reform.dev.models.CaseStatus;
 import uk.gov.hmcts.reform.dev.models.PagedResponse;
 import uk.gov.hmcts.reform.dev.repository.CaseRepository;
 
@@ -10,22 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-// Annotation
 @Service
-// Class implementing CaseService class
+
 public class CaseServiceImpl
         implements CaseService {
 
     @Autowired
     private CaseRepository myCaseRepository;
 
-    // Save operation
     @Override
     public Case createCase(Case myCase) {
         return myCaseRepository.save(myCase);
     }
 
-    // Read operation
     @Override
     public Case getCaseById(String caseId) {
         int id = Integer.parseInt(caseId);
@@ -39,7 +37,6 @@ public class CaseServiceImpl
     return ResponseEntity.ok(pagedResponse);
     }
 
-    // Update operation
     @Override
     public Case updateCase(Case myCase, String caseId) {
         int id = Integer.parseInt(caseId);
@@ -47,7 +44,6 @@ public class CaseServiceImpl
         if (depDB == null)
             return null;
 
-        // Use the actual field names from your Case model:
         if (Objects.nonNull(myCase.getTitle()) && !"".equalsIgnoreCase(myCase.getTitle())) {
             depDB.setTitle(myCase.getTitle());
         }
@@ -56,7 +52,7 @@ public class CaseServiceImpl
             depDB.setDescription(myCase.getDescription());
         }
 
-        if (Objects.nonNull(myCase.getStatus()) && !"".equalsIgnoreCase(myCase.getStatus())) {
+        if (Objects.nonNull(myCase.getStatus()) && !"".equalsIgnoreCase(myCase.getStatus().toString())) {
             depDB.setStatus(myCase.getStatus());
         }
 
@@ -67,10 +63,17 @@ public class CaseServiceImpl
         return myCaseRepository.save(depDB);
     }
 
-    // Delete operation
     @Override
     public void deleteCaseById(String caseId) {
         int id = Integer.parseInt(caseId);
         myCaseRepository.deleteById(id);
+    }
+
+    public List<Case> getCasesByStatus(CaseStatus status) {
+        return myCaseRepository.findByStatus(status);
+    }
+
+    public long countCasesByStatus(CaseStatus status) {
+        return myCaseRepository.countByStatus(status);
     }
 }

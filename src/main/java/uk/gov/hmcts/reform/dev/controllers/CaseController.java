@@ -2,23 +2,19 @@ package uk.gov.hmcts.reform.dev.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.dev.models.ExampleCase;
 import uk.gov.hmcts.reform.dev.models.PagedResponse;
 import uk.gov.hmcts.reform.dev.service.CaseService;
 import uk.gov.hmcts.reform.dev.models.Case;
+import uk.gov.hmcts.reform.dev.models.CaseStatus;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -63,5 +59,18 @@ public class CaseController {
     public ResponseEntity<Void> deleteCase(@PathVariable("id") String id) {
         caseService.deleteCaseById(id);
         return ResponseEntity.noContent().build();
+    }
+
+        // Additional endpoint to get available case statuses
+    @GetMapping(value = "/case-statuses")
+    public ResponseEntity<List<CaseStatus>> getCaseStatuses() {
+        return ResponseEntity.ok(Arrays.asList(CaseStatus.values()));
+    }
+
+    // Additional endpoint to get cases by status
+    @GetMapping(value = "/cases/status/{status}")
+    public ResponseEntity<List<Case>> getCasesByStatus(@PathVariable("status") CaseStatus status) {
+        // You'll need to implement this in your service layer
+        return ResponseEntity.ok().build(); // Placeholder
     }
 }

@@ -76,7 +76,7 @@ tasks.withType(Test).configureEach {
 }
 
 test {
-  failFast = true   // ✅ plain boolean
+  failFast = true
 }
 
 tasks.register("functional", Test) {
@@ -91,7 +91,7 @@ tasks.register("integration", Test) {
   group = "Verification"
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  failFast = true   // ✅ plain boolean
+  failFast = true
 }
 
 tasks.register("smoke", Test) {
@@ -102,11 +102,11 @@ tasks.register("smoke", Test) {
 }
 
 jacocoTestReport {
-  executionData(test, integration)
+  executionData.setFrom(files(test, integration))
   reports {
-    xml.required = true   // ✅ Property<Boolean>
-    csv.required = false  // ✅ Property<Boolean>
-    html.required = true  // ✅ Property<Boolean>
+    xml.required = true
+    csv.required = false
+    html.required = true
   }
 }
 
@@ -138,13 +138,13 @@ dependencyUpdates {
 
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-  suppressionFile = file('config/owasp/suppressions.xml') // ✅ File, not Property
+  suppressionFile = file('config/owasp/suppressions.xml')
 }
 
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven { url = 'https://jitpack.io' }
 }
 
 ext {
@@ -189,7 +189,7 @@ application {
 }
 
 bootJar {
-  archiveFileName = "test-backend.jar" // ✅ Property<String>
+  archiveFileName = "test-backend.jar"
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
@@ -198,13 +198,13 @@ bootJar {
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
 rootProject.tasks.named("processSmokeTestResources") {
-  duplicatesStrategy = DuplicatesStrategy.INCLUDE // ✅ enum
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 wrapper {
-  distributionType = Wrapper.DistributionType.ALL // ✅ enum
+  distributionType = Wrapper.DistributionType.ALL
 }
 
 checkstyle {
-  ignoreFailures = true // ✅ plain boolean
+  ignoreFailures = true
 }
