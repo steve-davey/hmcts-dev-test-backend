@@ -52,7 +52,7 @@ public class CaseServiceImpl
             depDB.setDescription(myCase.getDescription());
         }
 
-        if (Objects.nonNull(myCase.getStatus()) && !"".equalsIgnoreCase(myCase.getStatus().toString())) {
+        if (Objects.nonNull(myCase.getStatus())) {
             depDB.setStatus(myCase.getStatus());
         }
 

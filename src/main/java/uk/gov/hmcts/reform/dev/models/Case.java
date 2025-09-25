@@ -9,6 +9,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+// OpenAPI/Swagger imports
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Case entity representing a legal case in the system")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,31 +25,55 @@ import lombok.NoArgsConstructor;
 })
 public class Case {
     
+    @Schema(description = "Unique identifier for the case", 
+            example = "1", 
+            accessMode = Schema.AccessMode.READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
+    @Schema(description = "Unique case number identifier", 
+            example = "ABC12345",
+            required = true,
+            maxLength = 50)
     @Column(name = "case_number", unique = true, nullable = false)
     @NotBlank(message = "Case number is required")
     @Size(max = 50, message = "Case number cannot exceed 50 characters")
     private String caseNumber;
     
+    @Schema(description = "Title or name of the case", 
+            example = "Contract Dispute Resolution",
+            required = true,
+            maxLength = 255)
     @Column(nullable = false)
     @NotBlank(message = "Title is required")
     @Size(max = 255, message = "Title cannot exceed 255 characters")
     private String title;
     
+    @Schema(description = "Detailed description of the case", 
+            example = "This case involves a contract dispute between two parties regarding the terms of service delivery.",
+            maxLength = 2000)
     @Column(columnDefinition = "TEXT")
     @Size(max = 2000, message = "Description cannot exceed 2000 characters")
     private String description;
     
+    @Schema(description = "Current status of the case", 
+            example = "OPEN",
+            required = true,
+            allowableValues = {"OPEN", "IN_PROGRESS", "CLOSED", "CANCELLED"})
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CaseStatus status;
     
+    @Schema(description = "Date and time when the case was created", 
+            example = "2024-01-15T10:30:00",
+            accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "created_date", nullable = false, updatable = false)
     private LocalDateTime createdDate;
     
+    @Schema(description = "Date and time when the case was last updated", 
+            example = "2024-01-16T14:45:00",
+            accessMode = Schema.AccessMode.READ_ONLY)
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
     
