@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.dev.models.PagedResponse;
 
 import org.springframework.http.ResponseEntity;
 
-// Class
 public interface CaseService {
     Case createCase(Case myCase);
     Case getCaseById(String caseId);
