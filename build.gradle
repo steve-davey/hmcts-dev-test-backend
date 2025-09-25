@@ -70,8 +70,15 @@ tasks.withType(JavaExec).configureEach {
 tasks.withType(Test).configureEach {
   useJUnitPlatform()
 
+    // Force tests to run even if up-to-date
+  outputs.upToDateWhen { false }
+
   testLogging {
+    events "passed", "skipped", "failed", "standardOut", "standardError"
     exceptionFormat = 'full'
+    showExceptions = true
+    showCauses = true
+    showStackTraces = true
   }
 }
 
