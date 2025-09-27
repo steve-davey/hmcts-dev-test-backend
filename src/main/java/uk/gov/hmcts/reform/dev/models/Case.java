@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.dev.models;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,7 +37,8 @@ public class Case {
             maxLength = 50)
     @Column(name = "case_number", unique = true, nullable = false)
     @NotBlank(message = "Case number is required")
-    @Size(max = 50, message = "Case number cannot exceed 50 characters")
+    @Size(min = 3, max = 20, message = "Case number must be between 3 and 20 characters")
+    @Pattern(regexp = "^[A-Z0-9]+$", message = "Case number must contain only uppercase letters and numbers")
     private String caseNumber;
     
     @Schema(description = "Title or name of the case", 
@@ -47,14 +47,14 @@ public class Case {
             maxLength = 255)
     @Column(nullable = false)
     @NotBlank(message = "Title is required")
-    @Size(max = 255, message = "Title cannot exceed 255 characters")
+    @Size(min = 5, max = 100, message = "Title must be between 5 and 100 characters")
     private String title;
     
     @Schema(description = "Detailed description of the case", 
             example = "This case involves a contract dispute between two parties regarding the terms of service delivery.",
             maxLength = 2000)
     @Column(columnDefinition = "TEXT")
-    @Size(max = 2000, message = "Description cannot exceed 2000 characters")
+    @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
     
     @Schema(description = "Current status of the case", 

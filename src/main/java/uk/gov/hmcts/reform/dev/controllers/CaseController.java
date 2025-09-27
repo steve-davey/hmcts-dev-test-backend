@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.dev.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -28,6 +30,7 @@ import java.util.List;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
+@Validated
 @Tag(name = "Case Management", description = "APIs for managing cases")
 public class CaseController {
 
@@ -101,7 +104,7 @@ public class CaseController {
                 description = "Case object that needs to be created", 
                 required = true,
                 content = @Content(schema = @Schema(implementation = Case.class)))
-        @RequestBody Case myCase) {
+       @Valid @RequestBody Case myCase) {
     Instant instant = Instant.now();
     LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     myCase.setCreatedDate(localDateTime);
