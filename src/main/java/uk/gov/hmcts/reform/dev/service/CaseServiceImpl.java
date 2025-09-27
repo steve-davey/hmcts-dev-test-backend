@@ -61,6 +61,10 @@ public class CaseServiceImpl implements CaseService {
                 existingCase.setStatus(myCase.getStatus());
             }
 
+            if (Objects.nonNull(myCase.getDueDate())) {
+                existingCase.setDueDate(myCase.getDueDate());
+            }
+
             if (Objects.nonNull(myCase.getCaseNumber()) && !myCase.getCaseNumber().trim().isEmpty()) {
                 existingCase.setCaseNumber(myCase.getCaseNumber());
             }
